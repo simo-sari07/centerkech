@@ -28,7 +28,7 @@ export default function SiteFooter() {
               </div>
               <div className="flex items-center space-x-3 text-gray-600">
                 <Phone className="h-5 w-5 text-red-500" />
-                <span>+212 6 39 04 20 53</span>
+                <span>+212 6 75 77 58 84</span>
               </div>
               <div className="flex items-center space-x-3 text-gray-600">
                 <Mail className="h-5 w-5 text-red-500" />
