@@ -39,7 +39,7 @@ export default function LocationsSection() {
 
   return (
     <section className="py-24 bg-gradient-to-b from-gray-50 to-white">
-      <div className="container mx-auto px-4">
+      <div className="container mx-auto px-4" style={{width:"90%" ,margin:"0 auto"}}>
         <div className="text-center mb-16">
           <h2 className="text-4xl font-bold text-gray-900 mb-4">Nos Centres</h2>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
@@ -66,7 +66,7 @@ export default function LocationsSection() {
                 >
                   <h3 className="text-xl font-semibold mb-2">{location.name}</h3>
                   <p className={`text-sm ${activeLocation.id === location.id ? "text-white/80" : "text-gray-500"}`}>
-                    {location.address}
+                    {location.address} 
                   </p>
                 </motion.div>
               ))}

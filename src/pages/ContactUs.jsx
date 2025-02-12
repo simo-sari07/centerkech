@@ -23,7 +23,7 @@ export default function ContactUs() {
   return (
     <main className="flex-1">
       <section className="py-12 md:py-24">
-        <div className="container px-4 md:px-6">
+        <div className="container px-4 md:px-6" style={{width:"90%" ,margin:"0 auto"}}>
           <div className="grid gap-12 lg:grid-cols-2">
             <motion.div
               initial={{ opacity: 0, y: 20 }}

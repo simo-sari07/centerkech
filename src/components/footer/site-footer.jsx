@@ -5,8 +5,8 @@ import React from "react"
 
 export default function SiteFooter() {
   return (
-    <footer className="bg-gray-50 ">
-      <div className="container px-4 py-16">
+    <footer className="bg-gray-50" >
+      <div className="container px-4 py-16" style={{width:"90%" ,margin:"0 auto"}}>
         <div className="grid grid-cols-1 md:grid-cols-4 gap-12">
           <div>
             <img

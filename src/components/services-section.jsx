@@ -54,7 +54,7 @@ const services = [
 export default function ServicesSection() {
   return (
     <section className="py-24 bg-gradient-to-b from-gray-50 to-white">
-      <div className="container px-4">
+      <div className="container px-4" style={{width:"90%" ,margin:"0 auto"}}>
         <div className="text-center max-w-3xl mx-auto mb-16">
         <div className="text-center max-w-3xl mx-auto mb-16">
           <h2 className="text-3xl font-bold mb-4">NOS SERVICES</h2>

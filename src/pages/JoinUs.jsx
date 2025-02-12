@@ -19,10 +19,10 @@ export default function JoinUs() {
   }
 
   return (
-    <main className="flex-1">
-      <section className="relative py-12 md:py-24 overflow-hidden">
+    <main className="flex-1" style={{width:"90%" ,margin:"0 auto",border:"1px solid red"}}>
+      <section className="relative py-12 md:py-24 overflow-hidden"  >
         <div className="absolute inset-0 bg-grid-black/[0.02] bg-[size:20px_20px]" />
-        <div className="container px-4 md:px-6">
+        <div className="container px-4 md:px-6" style={{width:"90%" ,margin:"0 auto"}}>
           <div className="grid gap-12 lg:grid-cols-2 lg:gap-16 items-center">
             <motion.div
               initial={{ opacity: 0, x: -20 }}
