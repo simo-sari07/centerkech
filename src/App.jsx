@@ -8,7 +8,9 @@ import ContactUs from "./pages/ContactUs"
 function App() {
   return (
     <Router>
+      
       <div className="min-h-screen bg-white flex flex-col">
+        simo
         <SiteHeader />
         <Routes>
           <Route path="/" element={<HomePage />} />
