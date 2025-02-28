@@ -17,6 +17,7 @@ import {
   BookCheck,
   Brain
 } from "lucide-react";
+import logo from "../../../public/imgs/logo.png"
 
 const Button = ({ children, className, to, onClick, ...props }) => {
   const baseStyles = "inline-flex items-center justify-center px-4 py-2 rounded-full font-medium transition-all duration-300";
@@ -124,9 +125,9 @@ export default function SiteHeader() {
       <div className="container mx-auto flex h-20 items-center justify-between px-4">
         <Link to="/" className="flex items-center space-x-3 z-50 group">
           <img
-            src="https://www.ville-marrakech.ma/images/blog/alc.jpg"
+            src={logo}
             alt="Logo Centre Red City"
-            className="h-12 w-auto transition-transform duration-300 group-hover:scale-105"
+            className="h-12 w-auto transition-transform duration-300 "
           />
         </Link>
 

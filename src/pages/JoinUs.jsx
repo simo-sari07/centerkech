@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { motion } from "framer-motion"
 import React from "react";
-
+import rejoifne from "../../public/imgs/rejoifne.png"
 export default function JoinUs() {
   const [formData, setFormData] = useState({
     name: "",
@@ -19,7 +19,7 @@ export default function JoinUs() {
   }
 
   return (
-    <main className="flex-1" style={{width:"90%" ,margin:"0 auto",border:"1px solid red"}}>
+    <main className="flex-1" style={{width:"90%" ,margin:"0 auto"}}>
       <section className="relative py-12 md:py-24 overflow-hidden"  >
         <div className="absolute inset-0 bg-grid-black/[0.02] bg-[size:20px_20px]" />
         <div className="container px-4 md:px-6" style={{width:"90%" ,margin:"0 auto"}}>
@@ -30,7 +30,7 @@ export default function JoinUs() {
               transition={{ duration: 0.6 }}
             >
               <img
-                src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-hnwDn73I1v9tluJLxuHfnWArbuszMF.png"
+                src={rejoifne }
                 alt="Join us illustration"
                 className="w-full max-w-md mx-auto"
               />
