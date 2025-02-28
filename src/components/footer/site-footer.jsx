@@ -80,15 +80,7 @@ export default function SiteFooter() {
       <div className="border-t border-gray-200">
         <div className="container px-4 py-6">
           <p className="text-center text-gray-600">
-            © Copyright 2023 | Centre Kech. Tous droits réservés. Powered By{" "}
-            <a
-              href="https://metakech.dev/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-red-500 hover:text-red-600 transition-colors"
-            >
-              Metakech
-            </a>
+            © Copyright 2023 | Centre Kech. Tous droits réservés. Powered By Mohamed Sari
           </p>
         </div>
       </div>
