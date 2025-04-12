@@ -1,14 +1,11 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react"
-import { motion } from "framer-motion"
 import React from "react"
 
-// Enhanced creative map component with 3D effects and animations
+// Simplified map component without animations
 function MapComponent({ location, isExpanded }) {
   const mapRef = useRef(null)
-  const [map, setMap] = useState(null)
-  const [marker, setMarker] = useState(null)
   const [mapLoaded, setMapLoaded] = useState(false)
   const [mapStyle, setMapStyle] = useState("streets") // streets, satellite, night
 
@@ -67,7 +64,7 @@ function MapComponent({ location, isExpanded }) {
         maxZoom: 19,
       }).addTo(newMap)
 
-      // Create custom icon with 3D effect
+      // Create custom icon
       const customIcon = window.L.divIcon({
         className: "custom-marker",
         html: `
@@ -93,11 +90,7 @@ function MapComponent({ location, isExpanded }) {
               border-radius: 50% 50% 50% 0;
               background: #2b7fff;
               transform: rotate(-45deg);
-              box-shadow: 
-                0 0 0 6px rgba(239, 68, 68, 0.2),
-                0 0 0 12px rgba(239, 68, 68, 0.1),
-                5px 5px 10px rgba(0,0,0,0.2);
-              animation: bounce 1s ease-in-out infinite alternate;
+              box-shadow: 0 0 0 6px rgba(43, 127, 255, 0.2);
             ">
               <div style="
                 width: 14px;
@@ -110,19 +103,6 @@ function MapComponent({ location, isExpanded }) {
               "></div>
             </div>
           </div>
-          <div class="pulse" style="
-            background: rgba(239, 68, 68, 0.2);
-            border-radius: 50%;
-            height: 50px;
-            width: 50px;
-            position: absolute;
-            left: 50%;
-            top: 50%;
-            margin: -25px 0 0 -25px;
-            transform: rotateX(55deg);
-            z-index: -2;
-            animation: pulse 2s ease-out infinite;
-          "></div>
         `,
         iconSize: [40, 40],
         iconAnchor: [20, 40],
@@ -183,12 +163,13 @@ function MapComponent({ location, isExpanded }) {
               font-size: 12px;
             ">Appeler</a>
             <a href="mailto:${location.email}" style="
-              background-color: #2b7fff;
+              background-color: #f8fafc;
               color: #2b7fff;
               padding: 4px 8px;
               border-radius: 4px;
               text-decoration: none;
               font-size: 12px;
+              border: 1px solid #2b7fff;
             ">Email</a>
           </div>
         </div>
@@ -196,8 +177,8 @@ function MapComponent({ location, isExpanded }) {
 
       newMarker.bindPopup(popupContent)
 
-      // Add circle with gradient effect
-      const circle = window.L.circle([location.coordinates[0], location.coordinates[1]], {
+      // Add circle
+      window.L.circle([location.coordinates[0], location.coordinates[1]], {
         color: "#2b7fff",
         fillColor: "#2b7fff",
         fillOpacity: 0.1,
@@ -309,9 +290,9 @@ function MapComponent({ location, isExpanded }) {
               width: 24px;
               height: 24px;
               border-radius: 4px;
-              background: ${mapStyle === "streets" ? "#2b7fff" : "#2b7fff"};
+              background: ${mapStyle === "streets" ? "#2b7fff" : "#f8fafc"};
               color: ${mapStyle === "streets" ? "white" : "#2b7fff"};
-              border: none;
+              border: 1px solid #2b7fff;
               font-size: 10px;
               cursor: pointer;
             ">Rue</button>
@@ -319,9 +300,10 @@ function MapComponent({ location, isExpanded }) {
               width: 24px;
               height: 24px;
               border-radius: 4px;
-              background: ${mapStyle === "satellite" ? "#2b7fff" : "#2b7fff"};
+              background: ${mapStyle === "satellite" ? "#2b7fff" : "#f8fafc"};
+              color: ${mapStyle === "satellite" ? "white" : '#2  ? "#2b7fff" : "#f8fafc'};
               color: ${mapStyle === "satellite" ? "white" : "#2b7fff"};
-              border: none;
+              border: 1px solid #2b7fff;
               font-size: 10px;
               cursor: pointer;
             ">Sat</button>
@@ -329,9 +311,9 @@ function MapComponent({ location, isExpanded }) {
               width: 24px;
               height: 24px;
               border-radius: 4px;
-              background: ${mapStyle === "night" ? "#2b7fff" : "#2b7fff"};
+              background: ${mapStyle === "night" ? "#2b7fff" : "#f8fafc"};
               color: ${mapStyle === "night" ? "white" : "#2b7fff"};
-              border: none;
+              border: 1px solid #2b7fff;
               font-size: 10px;
               cursor: pointer;
             ">Nuit</button>
@@ -358,34 +340,11 @@ function MapComponent({ location, isExpanded }) {
       }
       styleControl.addTo(newMap)
 
-      // Add custom CSS for animations
+      // Add custom CSS for styling
       if (!document.getElementById("leaflet-custom-css")) {
         const style = document.createElement("style")
         style.id = "leaflet-custom-css"
         style.textContent = `
-          @keyframes pulse {
-            0% {
-              transform: scale(0.1, 0.1);
-              opacity: 0;
-            }
-            50% {
-              opacity: 1;
-            }
-            100% {
-              transform: scale(1.5, 1.5);
-              opacity: 0;
-            }
-          }
-          
-          @keyframes bounce {
-            0% {
-              transform: rotate(-45deg) translateY(0);
-            }
-            100% {
-              transform: rotate(-45deg) translateY(-5px);
-            }
-          }
-          
           .leaflet-marker-icon {
             filter: drop-shadow(0 4px 3px rgba(0, 0, 0, 0.07));
           }
@@ -414,196 +373,26 @@ function MapComponent({ location, isExpanded }) {
             background-color: #2b7fff !important;
             color: white !important;
           }
-          
-          .leaflet-control-custom button:hover,
-          .style-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-            transition: all 0.2s ease;
-          }
         `
         document.head.appendChild(style)
       }
 
-      // Store references
-      setMap(newMap)
-      setMarker(newMarker)
       setMapLoaded(true)
-
-      // Pulsing effect for circle
-      let growing = true
-      const pulseCircle = () => {
-        const currentRadius = circle.getRadius()
-        if (growing) {
-          circle.setRadius(currentRadius + 5)
-          if (currentRadius > 350) growing = false
-        } else {
-          circle.setRadius(currentRadius - 5)
-          if (currentRadius < 300) growing = true
-        }
-      }
-
-      const pulseInterval = setInterval(pulseCircle, 100)
-
-      // Add 3D tilt effect on mouse move
-      const mapContainer = mapRef.current
-      const handleMouseMove = (e) => {
-        if (!mapContainer) return
-
-        const rect = mapContainer.getBoundingClientRect()
-        const x = e.clientX - rect.left
-        const y = e.clientY - rect.top
-
-        const centerX = rect.width / 2
-        const centerY = rect.height / 2
-
-        const tiltX = (y - centerY) / 50
-        const tiltY = (centerX - x) / 50
-
-        mapContainer.style.transform = `perspective(1000px) rotateX(${tiltX}deg) rotateY(${tiltY}deg) scale3d(1.02, 1.02, 1.02)`
-      }
-
-      const resetTilt = () => {
-        if (!mapContainer) return
-        mapContainer.style.transform = "perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)"
-      }
-
-      mapContainer.addEventListener("mousemove", handleMouseMove)
-      mapContainer.addEventListener("mouseleave", resetTilt)
-
-      // Clean up
-      return () => {
-        clearInterval(pulseInterval)
-        if (map) {
-          map.remove()
-          setMap(null)
-          setMarker(null)
-        }
-      }
     }
-  }, [mapStyle])
-
-  // Update map when location changes
-  useEffect(() => {
-    if (!map || !marker || !window.L) return
-
-    // Update map center and marker position
-    if (map && marker && window.L) {
-      map.setView([location.coordinates[0], location.coordinates[1]], isExpanded ? 16 : 15, {
-        animate: true,
-        duration: 1,
-        easeLinearity: 0.5,
-      })
-      marker.setLatLng([location.coordinates[0], location.coordinates[1]])
-
-      // Update popup content
-      const popupContent = `
-        <div style="
-          padding: 12px; 
-          text-align: center;
-          border-radius: 8px;
-          min-width: 200px;
-          box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-        ">
-          <div style="
-            width: 40px;
-            height: 40px;
-            background-color: #2b7fff;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 8px;
-            color: white;
-            font-weight: bold;
-          ">
-            ${location.name.charAt(0)}
-          </div>
-          <h3 style="
-            margin: 0 0 5px; 
-            font-size: 16px; 
-            color: #2b7fff;
-            font-weight: bold;
-          ">${location.name}</h3>
-          <p style="
-            margin: 0 0 8px; 
-            font-size: 12px; 
-            color: #2b7fff;
-          ">${location.address}</p>
-          <div style="
-            display: flex;
-            justify-content: center;
-            gap: 8px;
-            margin-top: 8px;
-          ">
-            <a href="tel:${location.phone}" style="
-              background-color: #2b7fff;
-              color: white;
-              padding: 4px 8px;
-              border-radius: 4px;
-              text-decoration: none;
-              font-size: 12px;
-            ">Appeler</a>
-            <a href="mailto:${location.email}" style="
-              background-color: #2b7fff;
-              color: #2b7fff;
-              padding: 4px 8px;
-              border-radius: 4px;
-              text-decoration: none;
-              font-size: 12px;
-            ">Email</a>
-          </div>
-        </div>
-      `
-
-      marker.bindPopup(popupContent)
-
-      // Fly to location with animation
-      map.flyTo([location.coordinates[0], location.coordinates[1]], isExpanded ? 16 : 15, {
-        duration: 1.5,
-        easeLinearity: 0.25,
-      })
-
-      // Bounce effect simulation
-      const originalPos = [location.coordinates[0], location.coordinates[1]]
-      const bounceAnimation = () => {
-        setTimeout(() => {
-          marker.setLatLng([originalPos[0] - 0.0001, originalPos[1]])
-        }, 200)
-        setTimeout(() => {
-          marker.setLatLng([originalPos[0] + 0.0001, originalPos[1]])
-        }, 400)
-        setTimeout(() => {
-          marker.setLatLng(originalPos)
-        }, 600)
-      }
-
-      bounceAnimation()
-
-      // Add a dramatic reveal effect
-      const mapContainer = mapRef.current
-      if (mapContainer) {
-        mapContainer.style.transform = "perspective(1000px) rotateX(10deg) scale3d(0.95, 0.95, 0.95)"
-        setTimeout(() => {
-          mapContainer.style.transition = "transform 1s ease-out"
-          mapContainer.style.transform = "perspective(1000px) rotateX(0deg) scale3d(1, 1, 1)"
-        }, 100)
-        setTimeout(() => {
-          mapContainer.style.transition = ""
-        }, 1100)
-      }
-    }
-  }, [location, isExpanded, map, marker])
+  }, [mapStyle, location])
 
   // Update map style when it changes
   useEffect(() => {
-    if (map && window.L) {
+    if (mapLoaded && window.L) {
       // Map style URLs
       const mapStyles = {
         streets: "https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png",
         satellite: "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
         night: "https://cartodb-basemaps-{s}.global.ssl.fastly.net/dark_all/{z}/{x}/{y}.png",
       }
+
+      const map = window.L.DomUtil.get("map")._leaflet
+      if (!map) return
 
       // Remove existing layers
       map.eachLayer((layer) => {
@@ -621,7 +410,7 @@ function MapComponent({ location, isExpanded }) {
       // Update style buttons
       document.querySelectorAll(".style-btn").forEach((btn) => {
         btn.classList.remove("active")
-        btn.style.backgroundColor = "#2b7fff"
+        btn.style.backgroundColor = "#f8fafc"
         btn.style.color = "#2b7fff"
       })
 
@@ -632,29 +421,23 @@ function MapComponent({ location, isExpanded }) {
         activeBtn.style.color = "white"
       }
     }
-  }, [mapStyle, map])
+  }, [mapStyle, mapLoaded])
 
   return (
     <div className="relative w-full h-full">
-      {/* Map container with fancy border and 3D effect */}
+      {/* Map container */}
       <div
         className="absolute inset-0 rounded-b-xl overflow-hidden"
         style={{
           boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
-          border: "1px solid rgba(239, 68, 68, 0.2)",
-          transition: "transform 0.3s ease-out",
+          border: "1px solid rgba(43, 127, 255, 0.2)",
         }}
       >
-        <div ref={mapRef} id="map" className="w-full h-full" style={{ transition: "all 0.5s ease" }} />
+        <div ref={mapRef} id="map" className="w-full h-full" />
       </div>
 
       {/* Map overlay with location info */}
-      <motion.div
-        className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm p-3 rounded-lg shadow-lg z-[1000] max-w-xs"
-        initial={{ opacity: 0, x: -20 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ delay: 0.5 }}
-      >
+      <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm p-3 rounded-lg shadow-lg z-[1000] max-w-xs">
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold">
             {location.name.charAt(0)}
@@ -664,19 +447,14 @@ function MapComponent({ location, isExpanded }) {
             <p className="text-xs text-gray-600">{location.address}</p>
           </div>
         </div>
-      </motion.div>
+      </div>
 
       {/* Map style indicator */}
-      <motion.div
-        className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full shadow-lg z-[1000]"
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.7 }}
-      >
+      <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full shadow-lg z-[1000]">
         <span className="text-xs font-medium text-blue-500">
           {mapStyle === "streets" ? "Vue Rue" : mapStyle === "satellite" ? "Vue Satellite" : "Vue Nuit"}
         </span>
-      </motion.div>
+      </div>
 
       {/* Loading overlay */}
       {!mapLoaded && (
@@ -690,41 +468,6 @@ function MapComponent({ location, isExpanded }) {
           </div>
         </div>
       )}
-
-      {/* Creative floating elements */}
-      <div className="absolute inset-0 pointer-events-none z-[998] overflow-hidden">
-        {mapLoaded && (
-          <>
-            <motion.div
-              className="absolute w-20 h-20 rounded-full bg-blue-500/10"
-              style={{ top: "20%", left: "10%" }}
-              animate={{
-                y: [0, -15, 0],
-                scale: [1, 1.1, 1],
-              }}
-              transition={{
-                duration: 4,
-                repeat: Number.POSITIVE_INFINITY,
-                repeatType: "reverse",
-              }}
-            />
-            <motion.div
-              className="absolute w-12 h-12 rounded-full bg-blue-500/10"
-              style={{ bottom: "30%", right: "15%" }}
-              animate={{
-                y: [0, 10, 0],
-                scale: [1, 1.2, 1],
-              }}
-              transition={{
-                duration: 3,
-                repeat: Number.POSITIVE_INFINITY,
-                repeatType: "reverse",
-                delay: 1,
-              }}
-            />
-          </>
-        )}
-      </div>
     </div>
   )
 }
