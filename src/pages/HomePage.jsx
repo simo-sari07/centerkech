@@ -1,7 +1,9 @@
-import FeaturesSection from "../components/features-section"
+import BlogSection from "../components/blog-section"
 import HeroSection from "../components/hero/hero-section"
 import LocationsSection from "../components/locations-section"
 import ServicesSection from "../components/services-section"
+import TestimonialSection from "../components/testimonial-section"
+//       <div className="container mx-auto px-4">
 import React from "react"
 export default function HomePage() {
   return (
@@ -9,8 +11,8 @@ export default function HomePage() {
       <HeroSection />
       <ServicesSection />
       <LocationsSection />
-      <FeaturesSection />
-
+      <TestimonialSection/>
+      <BlogSection/>
     </main>
   )
 }

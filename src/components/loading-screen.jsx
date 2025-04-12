@@ -16,7 +16,7 @@ export default function LoadingScreen() {
         transition={{ duration: 2, repeat: Number.POSITIVE_INFINITY }}
         className="relative"
       >
-        <div className="h-16 w-16 rounded-full border-4 border-red-500 border-t-transparent animate-spin" />
+        <div className="h-16 w-16 rounded-full border-4 border-blue-500 border-t-transparent animate-spin" />
       </motion.div>
     </motion.div>
   )

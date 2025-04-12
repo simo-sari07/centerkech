@@ -1,327 +1,554 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { MapPin, Phone, Mail, Send, CheckCircle } from "lucide-react"
+import { formService } from "../../api"
+import confetti from "canvas-confetti"
 import React from "react"
+// Icons
+import { CheckCircle, User, Mail, Phone, BookOpen, MessageSquare, Send, X, MapPin, Clock, Sparkles } from "lucide-react"
 
 export default function ContactUs() {
+  // Form state
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     tel: "",
-    subject: "",
+    formation: "",
     message: "",
   })
-  const [isSubmitted, setIsSubmitted] = useState(false)
-  const [activeLocation, setActiveLocation] = useState(0)
 
-  const locations = [
-    {
-      name: "Centre 1 - Sidi Youssef Ben Ali",
-      address: "Diour Chouhadaa SYBA Marrakech, Sidi Youssef Ben Ali, Maroc",
-      phone: "+212 6 39 04 20 53",
-      email: "contact@centerkech.com",
-      mapUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d13592.063948796918!2d-7.9614215!3d31.6060217!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xdafefb140cc57b5%3A0x4d30dd25061a3c67!2sCentre%20Red%20City!5e0!3m2!1sen!2sma!4v1680966124953!5m2!1sen!2sma"
-    },
-    {
-      name: "Centre 2 - Guéliz",
-      address: "Avenue Mohammed V, Guéliz, Marrakech, Maroc",
-      phone: "+212 6 39 04 20 54",
-      email: "gueliz@centerkech.com",
-      mapUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d13592.063948796918!2d-7.9614215!3d31.6060217!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xdafefb140cc57b5%3A0x4d30dd25061a3c67!2sCentre%20Red%20City!5e0!3m2!1sen!2sma!4v1680966124953!5m2!1sen!2sma"
-    }
-  ]
+  // UI states
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState(null)
+  const [showSuccess, setShowSuccess] = useState(false)
+  const [activeField, setActiveField] = useState(null)
 
-  // Auto-rotate locations every 10 seconds
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setActiveLocation((prev) => (prev + 1) % locations.length)
-    }, 10000)
-    return () => clearInterval(interval)
-  }, [locations.length])
-
-  const handleSubmit = (e) => {
-    e.preventDefault()
-    // Handle form submission
-    console.log(formData)
-    setIsSubmitted(true)
-    setTimeout(() => {
-      setIsSubmitted(false)
-      setFormData({
-        name: "",
-        email: "",
-        tel: "",
-        subject: "",
-        message: "",
-      })
-    }, 3000)
+  // Handle input changes
+  const handleInputChange = (e) => {
+    const { name, value } = e.target
+    setFormData({
+      ...formData,
+      [name]: value,
+    })
   }
 
-  const inputClasses = "w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-300 bg-gray-50"
+  // Handle form submission
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+
+    // Validate form
+    if (!formData.name || !formData.email || !formData.tel || !formData.formation) {
+      setError("Veuillez remplir tous les champs obligatoires")
+      return
+    }
+
+    setError(null)
+    setLoading(true)
+
+    try {
+      const response = await formService.submitForm({
+        ...formData,
+        source: "contact",
+      })
+
+      if (response.success) {
+        setShowSuccess(true)
+        setFormData({
+          name: "",
+          email: "",
+          tel: "",
+          formation: "",
+          message: "",
+        })
+
+        // Trigger confetti effect
+        confetti({
+          particleCount: 100,
+          spread: 70,
+          origin: { y: 0.6 },
+          disableForReducedMotion: true,
+        })
+
+        // Auto close the success popup after 5 seconds
+        setTimeout(() => {
+          setShowSuccess(false)
+        }, 5000)
+      } else {
+        setError(response.message || "Une erreur est survenue. Veuillez réessayer.")
+      }
+    } catch (err) {
+      console.error("Form submission error:", err)
+      setError(err.response?.data?.message || "Une erreur est survenue. Veuillez réessayer.")
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  // Contact info items
+  const contactInfo = [
+    {
+      icon: <Phone className="h-5 w-5" />,
+      title: "Téléphone",
+      value: "+212 6 75 77 58 84",
+      link: "tel:+212675775884",
+    },
+    {
+      icon: <Mail className="h-5 w-5" />,
+      title: "Email",
+      value: "contact@centerkech.com",
+      link: "mailto:contact@centerkech.com",
+    },
+    {
+      icon: <MapPin className="h-5 w-5" />,
+      title: "Adresse",
+      value: "Diour Chouhadaa SYBA Marrakech",
+      link: "https://maps.google.com/?q=Diour+Chouhadaa+SYBA+Marrakech",
+    },
+    {
+      icon: <Clock className="h-5 w-5" />,
+      title: "Heures d'ouverture",
+      value: "Lun-Ven: 9h-18h, Sam: 9h-13h",
+    },
+  ]
 
   return (
-    <main className="flex-1 bg-gradient-to-b from-white to-gray-50">
-      <section className="py-16 md:py-24">
+    <main className="flex-1 bg-gradient-to-br from-white to-red-50">
+      <section className="py-12 md:py-24">
         <div className="container px-4 md:px-6 mx-auto max-w-6xl">
-          <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.8 }}
-            className="text-center mb-12"
-          >
-            <h1 className="text-4xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-red-600 to-red-400">
-              Nous Sommes à Votre Service
-            </h1>
-            <p className="text-gray-600 max-w-xl mx-auto">
-              Visitez l'un de nos centres ou contactez-nous directement. Notre équipe est prête à vous accueillir et répondre à toutes vos questions.
-            </p>
-          </motion.div>
-
-          <div className="grid gap-12 lg:grid-cols-2">
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6 }}
-              className="space-y-8"
+          <div className="text-center mb-12">
+            <motion.h1
+              className="text-4xl md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-blue-400"
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
             >
-              <div>
-                <h2 className="text-2xl font-bold mb-4 flex items-center">
-                  <span className="mr-2">Nos Centres</span>
-                  <div className="h-1 flex-grow bg-gradient-to-r from-red-500 to-red-300 rounded-full" />
-                </h2>
-              </div>
+              CONTACTEZ-NOUS
+            </motion.h1>
+            <motion.p
+              className="mt-4 text-gray-600 max-w-2xl mx-auto"
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.1 }}
+            >
+              Nous sommes là pour répondre à toutes vos questions et vous aider dans votre parcours d'apprentissage
+            </motion.p>
+          </div>
 
-              <div className="space-y-6">
-                {locations.map((location, index) => (
-                  <motion.div
-                    key={index}
-                    className={`bg-white p-6 rounded-xl border shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer ${activeLocation === index ? 'border-red-500 ring-2 ring-red-100' : 'border-gray-100'}`}
-                    whileHover={{ y: -5 }}
-                    onClick={() => setActiveLocation(index)}
-                  >
-                    <h3 className="font-bold mb-4 text-lg flex items-center">
-                      <div className={`w-3 h-3 rounded-full mr-2 ${activeLocation === index ? 'bg-red-500' : 'bg-gray-300'}`} />
-                      {location.name}
-                    </h3>
-                    <div className="space-y-3">
-                      <motion.div 
-                        className="flex items-center space-x-3 text-gray-600"
-                        initial={{ opacity: 0.5 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ delay: 0.1 }}
+          <div className="grid md:grid-cols-2 gap-8 items-start">
+            {/* Contact form */}
+            <motion.div
+              initial={{ opacity: 0, y: 50 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+              className="order-2 md:order-1"
+            >
+              <div className="bg-white rounded-2xl shadow-xl p-8 relative overflow-hidden">
+                {/* Decorative elements */}
+                <div className="absolute -top-20 -right-20 w-40 h-40 bg-blue-100 rounded-full opacity-50" />
+                <div className="absolute -bottom-20 -left-20 w-40 h-40 bg-blue-100 rounded-full opacity-50" />
+
+                <div className="relative">
+                  <h2 className="text-2xl font-bold mb-6 flex items-center">
+                    <MessageSquare className="mr-2 h-6 w-6 text-blue-500" />
+                    Envoyez-nous un message
+                  </h2>
+
+                  {/* Error message */}
+                  <AnimatePresence>
+                    {error && (
+                      <motion.div
+                        className="bg-red-50 border-l-4 border-blue-500 p-4 mb-6"
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: "auto" }}
+                        exit={{ opacity: 0, height: 0 }}
                       >
-                        <MapPin className="h-5 w-5 text-red-500 flex-shrink-0" />
-                        <span>{location.address}</span>
+                        <div className="flex">
+                          <div className="flex-shrink-0">
+                            <svg className="h-5 w-5 text-blue-500" viewBox="0 0 20 20" fill="currentColor">
+                              <path
+                                fillRule="evenodd"
+                                d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                                clipRule="evenodd"
+                              />
+                            </svg>
+                          </div>
+                          <div className="ml-3">
+                            <p className="text-sm text-blue-700">{error}</p>
+                          </div>
+                        </div>
                       </motion.div>
-                      <motion.div 
-                        className="flex items-center space-x-3 text-gray-600"
-                        initial={{ opacity: 0.5 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ delay: 0.2 }}
-                      >
-                        <Phone className="h-5 w-5 text-red-500 flex-shrink-0" />
-                        <span>{location.phone}</span>
-                      </motion.div>
-                      <motion.div 
-                        className="flex items-center space-x-3 text-gray-600"
-                        initial={{ opacity: 0.5 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ delay: 0.3 }}
-                      >
-                        <Mail className="h-5 w-5 text-red-500 flex-shrink-0" />
-                        <span>{location.email}</span>
-                      </motion.div>
+                    )}
+                  </AnimatePresence>
+
+                  <form onSubmit={handleSubmit} className="space-y-4">
+                    <div>
+                      <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
+                        Nom <span className="text-blue-500">*</span>
+                      </label>
+                      <div className="relative">
+                        <input
+                          id="name"
+                          name="name"
+                          type="text"
+                          required
+                          className={`w-full pl-10 pr-4 py-3 border rounded-lg transition-colors ${
+                            activeField === "name"
+                              ? "border-blue-500 ring-2 ring-blue-200"
+                              : "border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
+                          }`}
+                          value={formData.name}
+                          onChange={handleInputChange}
+                          onFocus={() => setActiveField("name")}
+                          onBlur={() => setActiveField(null)}
+                          autoComplete="name"
+                          placeholder="Votre nom complet"
+                        />
+                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                          <User className={`h-5 w-5 ${activeField === "name" ? "text-blue-500" : "text-gray-400"}`} />
+                        </div>
+                      </div>
                     </div>
-                  </motion.div>
-                ))}
-              </div>
 
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={activeLocation}
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.5 }}
-                  className="h-[400px] rounded-xl overflow-hidden border border-gray-200 shadow-md"
-                >
-                  <iframe
-                    src={locations[activeLocation].mapUrl}
-                    width="100%"
-                    height="100%"
-                    style={{ border: 0 }}
-                    allowFullScreen
-                    loading="lazy"
-                    referrerPolicy="no-referrer-when-downgrade"
-                    title={`Map for ${locations[activeLocation].name}`}
-                  />
-                </motion.div>
-              </AnimatePresence>
-            </motion.div>
+                    <div>
+                      <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+                        Email <span className="text-blue-500">*</span>
+                      </label>
+                      <div className="relative">
+                        <input
+                          id="email"
+                          name="email"
+                          type="email"
+                          required
+                          className={`w-full pl-10 pr-4 py-3 border rounded-lg transition-colors ${
+                            activeField === "email"
+                              ? "border-blue-500 ring-2 ring-blue-200"
+                              : "border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
+                          }`}
+                          value={formData.email}
+                          onChange={handleInputChange}
+                          onFocus={() => setActiveField("email")}
+                          onBlur={() => setActiveField(null)}
+                          autoComplete="email"
+                          placeholder="votre@email.com"
+                        />
+                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                          <Mail className={`h-5 w-5 ${activeField === "email" ? "text-blue-500" : "text-gray-400"}`} />
+                        </div>
+                      </div>
+                    </div>
 
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              className="lg:pl-8"
-            >
-              <div className="bg-white p-8 rounded-xl border border-gray-200 shadow-sm">
-                <h2 className="text-2xl font-bold mb-6 relative">
-                  <span className="relative z-10">CONTACTEZ-NOUS</span>
-                  <div className="absolute bottom-0 left-0 h-3 w-24 bg-red-200 -z-0" />
-                </h2>
-                
-                <AnimatePresence mode="wait">
-                  {isSubmitted ? (
-                    <motion.div 
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0 }}
-                      className="flex flex-col items-center justify-center py-12 text-center space-y-4"
-                    >
-                      <motion.div
-                        initial={{ scale: 0 }}
-                        animate={{ scale: 1, rotate: [0, 10, 0] }}
-                        transition={{ type: "spring", stiffness: 200, damping: 10 }}
-                      >
-                        <CheckCircle className="h-16 w-16 text-green-500" />
-                      </motion.div>
-                      <h3 className="text-xl font-bold text-gray-800">Message Envoyé!</h3>
-                      <p className="text-gray-600">Merci de nous avoir contacté. Nous vous répondrons dans les plus brefs délais.</p>
-                    </motion.div>
-                  ) : (
-                    <motion.form 
-                      onSubmit={handleSubmit} 
-                      className="space-y-5"
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      exit={{ opacity: 0 }}
-                    >
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                        <motion.div
-                          initial={{ x: -20, opacity: 0 }}
-                          animate={{ x: 0, opacity: 1 }}
-                          transition={{ delay: 0.1 }}
-                        >
-                          <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
-                            Nom
-                          </label>
-                          <input
-                            id="name"
-                            type="text"
-                            required
-                            className={inputClasses}
-                            value={formData.name}
-                            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                            placeholder="Votre nom complet"
-                          />
-                        </motion.div>
-                        <motion.div
-                          initial={{ x: -20, opacity: 0 }}
-                          animate={{ x: 0, opacity: 1 }}
-                          transition={{ delay: 0.2 }}
-                        >
-                          <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-                            Email
-                          </label>
-                          <input
-                            id="email"
-                            type="email"
-                            required
-                            className={inputClasses}
-                            value={formData.email}
-                            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                            placeholder="votre@email.com"
-                          />
-                        </motion.div>
+                    <div>
+                      <label htmlFor="tel" className="block text-sm font-medium text-gray-700 mb-1">
+                        Téléphone <span className="text-blue-500">*</span>
+                      </label>
+                      <div className="relative">
+                        <input
+                          id="tel"
+                          name="tel"
+                          type="tel"
+                          required
+                          className={`w-full pl-10 pr-4 py-3 border rounded-lg transition-colors ${
+                            activeField === "tel"
+                              ? "border-blue-500 ring-2 ring-blue-200"
+                              : "border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
+                          }`}
+                          value={formData.tel}
+                          onChange={handleInputChange}
+                          onFocus={() => setActiveField("tel")}
+                          onBlur={() => setActiveField(null)}
+                          autoComplete="tel"
+                          placeholder="Votre numéro de téléphone"
+                        />
+                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                          <Phone className={`h-5 w-5 ${activeField === "tel" ? "text-blue-500" : "text-gray-400"}`} />
+                        </div>
                       </div>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                        <motion.div
-                          initial={{ x: -20, opacity: 0 }}
-                          animate={{ x: 0, opacity: 1 }}
-                          transition={{ delay: 0.3 }}
+                    </div>
+
+                    <div>
+                      <label htmlFor="formation" className="block text-sm font-medium text-gray-700 mb-1">
+                        Formation <span className="text-blue-500">*</span>
+                      </label>
+                      <div className="relative">
+                        <select
+                          id="formation"
+                          name="formation"
+                          required
+                          className={`w-full pl-10 pr-4 py-3 border rounded-lg appearance-none transition-colors ${
+                            activeField === "formation"
+                              ? "border-blue-500 ring-2 ring-blue-200"
+                              : "border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
+                          }`}
+                          value={formData.formation}
+                          onChange={handleInputChange}
+                          onFocus={() => setActiveField("formation")}
+                          onBlur={() => setActiveField(null)}
                         >
-                          <label htmlFor="tel" className="block text-sm font-medium text-gray-700 mb-1">
-                            Téléphone
-                          </label>
-                          <input
-                            id="tel"
-                            type="tel"
-                            required
-                            className={inputClasses}
-                            value={formData.tel}
-                            onChange={(e) => setFormData({ ...formData, tel: e.target.value })}
-                            placeholder="+212 6XX XX XX XX"
+                          <option value="">Choisissez une formation</option>
+                          <option value="soutien">Cours de soutien scolaire</option>
+                          <option value="langues">Langues et communication</option>
+                          <option value="concours">Préparation aux concours</option>
+                          <option value="coaching">Coaching scolaire et orientation</option>
+                          <option value="formation">Formation continue</option>
+                          <option value="development">Développement personnel</option>
+                        </select>
+                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                          <BookOpen
+                            className={`h-5 w-5 ${activeField === "formation" ? "text-blue-500" : "text-gray-400"}`}
                           />
-                        </motion.div>
-                        <motion.div
-                          initial={{ x: -20, opacity: 0 }}
-                          animate={{ x: 0, opacity: 1 }}
-                          transition={{ delay: 0.4 }}
-                        >
-                          <label htmlFor="subject" className="block text-sm font-medium text-gray-700 mb-1">
-                            Sujet
-                          </label>
-                          <input
-                            id="subject"
-                            type="text"
-                            required
-                            className={inputClasses}
-                            value={formData.subject}
-                            onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
-                            placeholder="Le sujet de votre message"
-                          />
-                        </motion.div>
+                        </div>
+                        <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                          <svg
+                            className="h-5 w-5 text-gray-400"
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 20 20"
+                            fill="currentColor"
+                          >
+                            <path
+                              fillRule="evenodd"
+                              d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                              clipRule="evenodd"
+                            />
+                          </svg>
+                        </div>
                       </div>
-                      <motion.div
-                        initial={{ y: 20, opacity: 0 }}
-                        animate={{ y: 0, opacity: 1 }}
-                        transition={{ delay: 0.5 }}
-                      >
-                        <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-1">
-                          Message
-                        </label>
+                    </div>
+
+                    <div>
+                      <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-1">
+                        Message
+                      </label>
+                      <div className="relative">
                         <textarea
                           id="message"
-                          rows={6}
-                          required
-                          className={`${inputClasses} resize-none`}
+                          name="message"
+                          rows="4"
+                          className={`w-full pl-10 pr-4 py-3 border rounded-lg transition-colors ${
+                            activeField === "message"
+                              ? "border-blue-500 ring-2 ring-blue-200"
+                              : "border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
+                          }`}
                           value={formData.message}
-                          onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                          placeholder="Votre message ici..."
-                        />
-                      </motion.div>
-                      <motion.button
-                        type="submit"
-                        className="w-full bg-gradient-to-r from-red-600 to-red-500 text-white px-6 py-3 rounded-lg hover:from-red-700 hover:to-red-600 transition-all duration-300 flex items-center justify-center space-x-2 font-medium shadow-md hover:shadow-lg"
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
-                      >
-                        <span>ENVOYEZ VOTRE MESSAGE</span>
-                        <Send className="h-5 w-5" />
-                      </motion.button>
-                    </motion.form>
-                  )}
-                </AnimatePresence>
+                          onChange={handleInputChange}
+                          onFocus={() => setActiveField("message")}
+                          onBlur={() => setActiveField(null)}
+                          placeholder="Comment pouvons-nous vous aider?"
+                        ></textarea>
+                        <div className="absolute top-3 left-0 pl-3 flex items-start pointer-events-none">
+                          <MessageSquare
+                            className={`h-5 w-5 ${activeField === "message" ? "text-blue-500" : "text-gray-400"}`}
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    <motion.button
+                      type="submit"
+                      disabled={loading}
+                      className={`w-full mt-4 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-500 text-white rounded-lg flex items-center justify-center transition-all hover:shadow-lg ${
+                        loading ? "opacity-70 cursor-not-allowed" : ""
+                      }`}
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                    >
+                      {loading ? (
+                        <span className="flex items-center">
+                          <svg
+                            className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                          >
+                            <circle
+                              className="opacity-25"
+                              cx="12"
+                              cy="12"
+                              r="10"
+                              stroke="currentColor"
+                              strokeWidth="4"
+                            ></circle>
+                            <path
+                              className="opacity-75"
+                              fill="currentColor"
+                              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                            ></path>
+                          </svg>
+                          Envoi en cours...
+                        </span>
+                      ) : (
+                        <span className="flex items-center">
+                          Envoyer le message
+                          <Send className="ml-2 h-4 w-4" />
+                        </span>
+                      )}
+                    </motion.button>
+                  </form>
+                </div>
               </div>
-              
-              <motion.div 
-                className="mt-8 p-5 bg-red-50 rounded-lg border border-red-100 shadow-sm"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.7 }}
-              >
-                <h3 className="font-medium text-red-600 mb-2">Pourquoi nous contacter?</h3>
-                <p className="text-gray-700 text-sm">
-                  Notre équipe est disponible pour vous aider avec toutes vos questions concernant nos services, 
-                  réservations, ou toute autre demande. Nous nous engageons à vous répondre dans un délai de 24 heures.
-                </p>
-              </motion.div>
+            </motion.div>
+
+            {/* Contact info */}
+            <motion.div
+              initial={{ opacity: 0, y: 50 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.3 }}
+              className="order-1 md:order-2"
+            >
+              <div className="bg-white rounded-2xl shadow-xl p-8 sticky top-8">
+                <h2 className="text-2xl font-bold mb-6">Nos coordonnées</h2>
+
+                <div className="space-y-6">
+                  {contactInfo.map((item, index) => (
+                    <motion.div
+                      key={index}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.4 + index * 0.1 }}
+                      className="flex items-start"
+                    >
+                      <div className="flex-shrink-0 w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-500">
+                        {item.icon}
+                      </div>
+                      <div className="ml-4">
+                        <h3 className="text-lg font-medium text-gray-900">{item.title}</h3>
+                        {item.link ? (
+                          <a
+                            href={item.link}
+                            className="text-gray-600 hover:text-blue-500 transition-colors"
+                            target={item.link.startsWith("http") ? "_blank" : undefined}
+                            rel={item.link.startsWith("http") ? "noopener noreferrer" : undefined}
+                          >
+                            {item.value}
+                          </a>
+                        ) : (
+                          <p className="text-gray-600">{item.value}</p>
+                        )}
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
+
+                {/* Map or additional info */}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.8 }}
+                  className="mt-8 p-4 bg-red-50 rounded-lg border border-blue-100"
+                >
+                  <h3 className="font-semibold text-blue-600 mb-2">Pourquoi nous contacter?</h3>
+                  <ul className="text-sm text-gray-600 space-y-2">
+                    <li className="flex items-start">
+                      <span className="mr-2">•</span>
+                      <span>Pour obtenir plus d'informations sur nos formations</span>
+                    </li>
+                    <li className="flex items-start">
+                      <span className="mr-2">•</span>
+                      <span>Pour planifier une visite de notre centre</span>
+                    </li>
+                    <li className="flex items-start">
+                      <span className="mr-2">•</span>
+                      <span>Pour discuter de vos besoins spécifiques en matière d'apprentissage</span>
+                    </li>
+                    <li className="flex items-start">
+                      <span className="mr-2">•</span>
+                      <span>Pour toute question concernant nos services</span>
+                    </li>
+                  </ul>
+                </motion.div>
+
+                {/* Social media links could be added here */}
+              </div>
             </motion.div>
           </div>
         </div>
       </section>
+
+      {/* Success Popup */}
+      <AnimatePresence>
+        {showSuccess && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
+          >
+            <motion.div
+              initial={{ scale: 0.9, y: 20, opacity: 0 }}
+              animate={{ scale: 1, y: 0, opacity: 1 }}
+              exit={{ scale: 0.9, y: 20, opacity: 0 }}
+              transition={{ type: "spring", damping: 25 }}
+              className="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full relative overflow-hidden"
+            >
+              {/* Decorative elements */}
+              <div className="absolute -top-20 -right-20 w-40 h-40 bg-green-100 rounded-full opacity-30" />
+              <div className="absolute -bottom-20 -left-20 w-40 h-40 bg-green-100 rounded-full opacity-30" />
+
+              {/* Close button */}
+              <button
+                onClick={() => setShowSuccess(false)}
+                className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors z-10"
+              >
+                <X className="h-6 w-6" />
+              </button>
+
+              {/* Success content */}
+              <div className="text-center relative z-10">
+                <motion.div
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ type: "spring", damping: 15, delay: 0.2 }}
+                  className="mx-auto flex items-center justify-center h-24 w-24 rounded-full bg-green-100 mb-6"
+                >
+                  <CheckCircle className="h-12 w-12 text-green-500" />
+
+                  {/* Sparkles */}
+                  <motion.div
+                    className="absolute top-0 left-0 w-full h-full"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.5 }}
+                  >
+                    <Sparkles className="absolute -top-2 -right-2 h-6 w-6 text-yellow-400" />
+                    <Sparkles className="absolute -bottom-2 -left-2 h-6 w-6 text-yellow-400" />
+                  </motion.div>
+                </motion.div>
+
+                <motion.h3
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.3 }}
+                  className="text-2xl font-bold text-gray-900 mb-2"
+                >
+                  Message Envoyé!
+                </motion.h3>
+
+                <motion.p
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.4 }}
+                  className="text-gray-600 mb-6"
+                >
+                  Merci pour votre message! Notre équipe vous contactera dans les 24 heures pour répondre à votre
+                  demande.
+                </motion.p>
+
+                <motion.button
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.5 }}
+                  onClick={() => setShowSuccess(false)}
+                  className="px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-500 text-white rounded-lg hover:shadow-lg transition-all"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  Fermer
+                </motion.button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </main>
   )
 }

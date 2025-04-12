@@ -23,15 +23,15 @@ export default function SiteFooter() {
             <h3 className="font-bold text-lg mb-6">À-PROPOS</h3>
             <div className="space-y-4">
               <div className="flex items-center space-x-3 text-gray-600">
-                <MapPin className="h-5 w-5 text-red-500" />
+                <MapPin className="h-5 w-5 text-blue-500" />
                 <span>Marrakech, Maroc</span>
               </div>
               <div className="flex items-center space-x-3 text-gray-600">
-                <Phone className="h-5 w-5 text-red-500" />
+                <Phone className="h-5 w-5 text-blue-500" />
                 <span>+212 6 75 77 58 84</span>
               </div>
               <div className="flex items-center space-x-3 text-gray-600">
-                <Mail className="h-5 w-5 text-red-500" />
+                <Mail className="h-5 w-5 text-blue-500" />
                 <span>contact@centerkech.com</span>
               </div>
             </div>
@@ -48,7 +48,7 @@ export default function SiteFooter() {
                 { label: "Politique de confidentialité", to: "/privacy" },
               ].map((link) => (
                 <li key={link.to}>
-                  <Link to={link.to} className="text-gray-600 hover:text-red-500 transition-colors">
+                  <Link to={link.to} className="text-gray-600 hover:text-blue-500 transition-colors">
                     {link.label}
                   </Link>
                 </li>
@@ -67,7 +67,7 @@ export default function SiteFooter() {
                 <a
                   key={index}
                   href={social.href}
-                  className="w-10 h-10 rounded-full bg-white border border-gray-200 flex items-center justify-center text-gray-600 hover:text-red-500 hover:border-red-500 transition-colors"
+                  className="w-10 h-10 rounded-full bg-white border border-gray-200 flex items-center justify-center text-gray-600 hover:text-blue-500 hover:border-blue-500 transition-colors"
                 >
                   <social.icon className="h-5 w-5" />
                 </a>
